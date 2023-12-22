@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-sendAuth
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: sendAuthLambdaRole
+environment:
+  FUNCTION_NAME : sendAuth
+events:
+  - http:
+      path: ${self:custom.basePath}/sendAuth
+      method: POST
+      cors: ${file(./serverless/general/cors.yml)}

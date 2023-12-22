@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-getMasters
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: getMastersLambdaRole
+environment:
+  FUNCTION_NAME : getMasters
+events:
+  - http:
+      path: ${self:custom.basePath}/master
+      method: GET
+      cors: ${file(./serverless/general/cors.yml)}

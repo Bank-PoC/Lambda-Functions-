@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-getTramaByAtt
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: getTramaByAttLambdaRole
+environment:
+  FUNCTION_NAME : getTramaByAtt
+events:
+  - http:
+      path: ${self:custom.basePath}/filterTrama
+      method: GET
+      cors: ${file(./serverless/general/cors.yml)}

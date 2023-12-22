@@ -1,0 +1,52 @@
+service: pocmigracionswitchjv-aws
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: java11
+  stage: ${self:custom.stage}
+  region: ${self:custom.region}
+  profile: pocmigracionswitch-profile
+  stackTags:
+    Stage: ${self:custom.stage}
+    Project: ${self:custom.project}
+    Technology: Serverless
+    Owner: Milton Cárdenas
+
+useDotenv: true
+
+package:
+  artifact: target/SpringAwsLambda-0.0.1-SNAPSHOT-aws.jar
+
+custom: ${file(./serverless/general/custom.yml)}
+
+functions:
+  getMastersFunction: ${file(./serverless/lambda/getMastersFunction.yml)}
+  logHistoryFunction: ${file(./serverless/lambda/logHistoryFunction.yml)}
+  getTramaByAttFunction: ${file(./serverless/lambda/getTramaByAttFunction.yml)}
+  getTramaByIdFunction: ${file(./serverless/lambda/getTramaByIdFunction.yml)}
+  saveTramaFunction: ${file(./serverless/lambda/saveTramaFunction.yml)}
+  DeleteFunction: ${file(./serverless/lambda/DeleteFunction.yml)}
+  saveChildTramaFunction: ${file(./serverless/lambda/saveChildTramaFunction.yml)}
+  sendAuthFunction: ${file(./serverless/lambda/sendAuthFunction.yml)}
+  getLogHistoryByIdFunction: ${file(./serverless/lambda/getLogHistoryByIdFunction.yml)}
+  
+
+resources:
+  Resources:
+    #IamRole
+    getMastersLambdaRole: ${file(./serverless/iamRole/getMastersLambdaRole.yml)}
+    logHistoryLambdaRole: ${file(./serverless/iamRole/logHistoryLambdaRole.yml)}
+    getTramaByAttLambdaRole: ${file(./serverless/iamRole/getTramaByAttLambdaRole.yml)}
+    getTramaByIdLambdaRole: ${file(./serverless/iamRole/getTramaByIdLambdaRole.yml)}
+    saveTramaLambdaRole: ${file(./serverless/iamRole/saveTramaLambdaRole.yml)}
+    DeleteLambdaRole: ${file(./serverless/iamRole/DeleteLambdaRole.yml)}
+    saveTramaHijoLambdaRole: ${file(./serverless/iamRole/saveTramaHijoLambdaRole.yml)}
+    sendAuthLambdaRole: ${file(./serverless/iamRole/sendAuthLambdaRole.yml)}
+    getLogHistoryByIdLambdaRole: ${file(./serverless/iamRole/getLogHistoryByIdLambdaRole.yml)}
+    
+    
+    
+    
+    
+    

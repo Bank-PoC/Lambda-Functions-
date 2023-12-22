@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-logHistory
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: logHistoryLambdaRole
+environment:
+  FUNCTION_NAME : logHistory
+events:
+  - http:
+      path: ${self:custom.basePath}/logHistory
+      method: GET
+      cors: ${file(./serverless/general/cors.yml)}

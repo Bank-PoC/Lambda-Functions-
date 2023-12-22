@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-saveChildTrama
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: saveTramaHijoLambdaRole
+environment:
+  FUNCTION_NAME : saveChildTrama
+events:
+  - http:
+      path: ${self:custom.basePath}/saveChild/{idParent}
+      method: POST
+      cors: ${file(./serverless/general/cors.yml)}

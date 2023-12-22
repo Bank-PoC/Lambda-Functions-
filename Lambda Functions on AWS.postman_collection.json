@@ -1,0 +1,365 @@
+{
+	"info": {
+		"_postman_id": "7ea24eae-6741-4f21-9958-613915cfcc9e",
+		"name": "Lambda Functions on AWS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25152600"
+	},
+	"item": [
+		{
+			"name": "Consultar masters",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "spring.cloud.function.definition",
+						"value": "getMasters",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/master?typeMaster=messageTypeMaster",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"master"
+					],
+					"query": [
+						{
+							"key": "typeMaster",
+							"value": "messageTypeMaster"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar LogHistory x 4 filtros",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "spring.cloud.function.definition",
+						"value": "logHistory",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/logHistory?financialEntity=1507&typeTransaction=011000&productOrigin=01&typeMessage=0200",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"logHistory"
+					],
+					"query": [
+						{
+							"key": "financialEntity",
+							"value": "1507"
+						},
+						{
+							"key": "typeTransaction",
+							"value": "011000"
+						},
+						{
+							"key": "productOrigin",
+							"value": "01"
+						},
+						{
+							"key": "typeMessage",
+							"value": "0200"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guardar trama ISO8583",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "spring.cloud.function.definition",
+						"value": "saveTrama",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"financialEntity\": \"1507\",\n    \"isoParentMessage\": \n    \"ISO0160000100200B238440128A1901A00000000100001AC0110000032102820881021211152000125161112102155339010212325011111111111111=14031010000050400000000000300000001        REFACC VAUDEMAR 1     CANCXZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   \"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/saveTrama",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"saveTrama"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar trama padre x 4 filtros",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "spring.cloud.function.definition",
+						"value": "getTramas",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/filterTrama",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"filterTrama"
+					],
+					"query": [
+						{
+							"key": "financialEntity",
+							"value": "1001",
+							"disabled": true
+						},
+						{
+							"key": "productOrigin",
+							"value": "01",
+							"disabled": true
+						},
+						{
+							"key": "typeMessage",
+							"value": "0200",
+							"disabled": true
+						},
+						{
+							"key": "typeTransaction",
+							"value": "011000",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar trama padre x id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "spring.cloud.function.definition",
+						"value": "getTramasById",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/searchTrama?entityId=04986735-5984-4374-b43f-a7c5dc0bc9d2",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"searchTrama"
+					],
+					"query": [
+						{
+							"key": "entityId",
+							"value": "04986735-5984-4374-b43f-a7c5dc0bc9d2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Trama padre x Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/deleteTrama/3b55732b-5685-46f5-a4d4-0a0b99e7ff1d",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"deleteTrama",
+						"3b55732b-5685-46f5-a4d4-0a0b99e7ff1d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guardar Trama Hijo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"h\": \"ISO026000010\",\n    \"t\": \"0200\",\n    \"p\": \"B238440128A1801A\",\n    \"1\": \"00000000100001AC\",\n    \"3\": \"002000\",\n    \"4\": \"000000004000\",\n    \"7\": \"0903204444\",\n    \"11\": \"009921\",\n    \"12\": \"154444\",\n    \"13\": \"0903\",\n    \"18\": \"5812\",\n    \"22\": \"902\",\n    \"32\": \"99999999999\",\n    \"35\": \"4696930020647078=14061013580000000000\",\n    \"37\": \"000000002929\",\n    \"41\": \"P0246779        \",\n    \"43\": \"GRUPO FILOA           MEXICO DF    000MX\",\n    \"48\": \"7327548            00011511\",\n    \"49\": \"484\",\n    \"60\": \"B021PRO1+0000000\",\n    \"61\": \"B133    00000000000\",\n    \"63\": \"& 0000400082! Q200002 03! C000026         00000012100       ! C400012 000000020050\",\n    \"100\": \"133\",\n    \"120\": \"AV GUILLERMO GONZALEZ NO 0000\",\n    \"121\": \"                    \",\n    \"123\": \"00000028200000002820\",\n    \"125\": \"P2B24 B24 03\",\n    \"126\": \"00000000000000000000000000000000000000\"\n}"
+				},
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/saveChild/d95d18aa-59db-41ca-97c3-7a0a3011837c",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"saveChild",
+						"d95d18aa-59db-41ca-97c3-7a0a3011837c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar al autorizador simulado",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/sendAuth?entityIdSentParent=d95d18aa-59db-41ca-97c3-7a0a3011837c&entityIdSentChild=34016196-62f8-46ef-a2f1-d3946c6dc765",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"sendAuth"
+					],
+					"query": [
+						{
+							"key": "entityIdSentParent",
+							"value": "d95d18aa-59db-41ca-97c3-7a0a3011837c"
+						},
+						{
+							"key": "entityIdSentChild",
+							"value": "34016196-62f8-46ef-a2f1-d3946c6dc765"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Comparador de tramas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/searchLog/01d93bba-ca24-4bef-baa4-8f13e5832c2f",
+					"protocol": "https",
+					"host": [
+						"t27drac5me",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"POCMigracionSwitchJV",
+						"searchLog",
+						"01d93bba-ca24-4bef-baa4-8f13e5832c2f"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

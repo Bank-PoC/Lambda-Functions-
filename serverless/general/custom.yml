@@ -1,0 +1,4 @@
+stage: dev
+project: POCMigracionSwitchJV
+region: us-east-1
+basePath: ${self:custom.project}

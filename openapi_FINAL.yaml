@@ -1,0 +1,1112 @@
+openapi: 3.0.3
+info:
+  title: Funciones Lambda para los servicios de mensajes con formato ISO8583
+  description: |-
+    Esta es la documentación de las funciones lambdas desplegadas en AWS de los servicios y operaciones de los mensajes ISO8583; dicha documentación está basada en las especificaciones de OpenAPI 3.0
+    
+    Algunos enlaces utiles:
+    - [Repositorio de las funciones lambda](https://sophosproyectos.visualstudio.com/GNB%20Sudameris_Agile/_git/GNBSudameris-AppBack)
+
+  version: 1.0.0
+externalDocs:
+  description: Encuentra más acerca de Swagger
+  url: http://swagger.io
+servers:
+  - url:  https://t27drac5me.execute-api.us-east-1.amazonaws.com/dev/POCMigracionSwitchJV/
+tags:
+  - name: Mensajería ISO8583 de la entidad
+    description: Todo acerca de las tramas de la entidad
+  - name: Mensajería ISO8583 de prueba
+    description: Manejo de las tramas de prueba
+  - name: Registro de Logs de mensaje ISO8583
+    description: Acerca de los registros de tramas
+  - name: Autorizador
+    description: Acerca del envio message-autorizador
+    
+    
+paths:
+  /filterTrama:
+    get:
+      tags:
+        - Mensajería ISO8583 de la entidad
+      summary: Consultar mensajes ISO8583 de la entidad
+      description: Consulta mensajes de la entidad por 4 filtros, los cuales son Entidad financiera, Producto de origen, Tipo de mensaje y Tipo.
+      operationId: getTramaByAtt
+      parameters:
+      
+      - $ref: '#/components/parameters/financialEntity'
+      - $ref: '#/components/parameters/productOrigin'
+      - $ref: '#/components/parameters/typeMessage'
+      - $ref: '#/components/parameters/typeTransaction'
+
+      responses:
+        '200':
+          description: Operación de filtro de mensajes ISO8583 de la entidad ha sido exitosa.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccesGetMsgsxFilters'
+                minItems: 3
+        '204':
+          description: No existen mensajes ISO8583 que sastifacen los parametros solicitados
+        
+        '400':
+          description: Todos los campos a llenar son obligatorios
+          content:
+            application/json:
+              schema:
+                    $ref: '#/components/schemas/BadRequest'
+
+            
+
+            
+  /searchTrama:
+    get:
+      tags:
+        - Mensajería ISO8583 de la entidad
+      summary: Consultar por Id un mensaje ISO8583 de la entidad
+      description: Consultar mensaje de la entidad por el filtro id del mensaje ISO8583 con el cual fue guardado en la base de datos.
+      operationId: getTramaById
+      parameters:
+      - $ref: '#/components/parameters/entityId'
+      
+      responses:
+        '200':
+          description: Mensaje ISO8583 recuperado de manera exitosa
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/GetMsgXId'          
+        '404':
+          description: No existe una trama con ese identificador dado por el usuario.
+          content:
+            application/json:
+              schema:
+                    $ref: '#/components/schemas/NotMsgXId'
+        '500':
+          description: No se envía el parametro ID del mensaje ISO8583
+          content:
+            application/json:
+              schema:
+                    $ref: '#/components/schemas/NotEntityIdSent'          
+          
+          
+          
+  /saveTrama:
+    post:
+      tags:
+        - Mensajería ISO8583 de la entidad
+      summary: Guarda mensajes ISO8583 de la entidad
+      description: Guarda mensajes que cumplan con el formato ISO8583 de la entidad especificada por el usuario.
+      operationId: saveTrama
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bodySaveMsg'
+        required: true      
+      responses:
+        '200':
+          description: Mensaje ISO8583 guardado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMsgSaved'
+        '409':
+          description: El mensaje ISO8583 que se intenta guardar ya existe en la base de datos para dicha entidad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingMsg'
+        '500':
+          description: No se ha registrado ningún mensaje ISO8583 para guardar
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotISOMsgSent'    
+        '400':
+          description: El mensaje que se intenta guardar no cumple con las especificaciones del formato ISO8583
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFormatISO8583'                
+  
+  /deleteTrama/{entityId}:
+    delete:
+      tags:
+        - Mensajería ISO8583 de la entidad
+      summary: Eliminar mensaje ISO8583 de la entidad por id.
+      description: Elimina los mensajes ISO8583 por el id el cual fue guardado en la base de datos.
+      operationId: deleteTrama
+      parameters:
+      - $ref: '#/components/parameters/DeleteXEntityId'
+      responses:
+        '200':
+          description: Mensaje ISO8583 eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedMsg'
+        '404':
+          description: El mensaje ISO8583 que tratas de eliminar no existe en la base de datos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotMsgXId'  
+        '403':
+          description: No se esta enviando el id del mensaje ISO8583 que deseas eliminar.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotIdMsgSent'  
+
+  /logHistory:
+    get:
+      tags:
+        - Registro de Logs de mensaje ISO8583
+      summary: Consultar registro-logs de las transacciones enviadas al autorizador  
+      description: Consulta de registros-logs por 4 filtros, los cuales son Entidad financiera, Producto de origen, Tipo de mensaje y Tipo
+      operationId: logHistory
+      parameters:
+      - $ref: '#/components/parameters/financialEntity'
+      - $ref: '#/components/parameters/productOrigin'
+      - $ref: '#/components/parameters/typeMessage'
+      - $ref: '#/components/parameters/typeTransaction'
+
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/logResponse'          
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/BadRequestFilter'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/InternalServerError'
+            
+
+  /saveChild/{idParent}:
+    post:
+      tags:
+        - Mensajería ISO8583 de prueba
+      summary: guardar registro de trama iso message 8583 hija
+      description: guardar registro de trama de prueba (hija) basada en la trama entidad
+      operationId: saveChild
+      parameters:
+        - name: idParent
+          in: path
+          description: ID trama entidad(padre)
+          required: true
+          schema:
+            type: string
+          example: "19761284-6f2e-4f05-8003-d3b3b58247c"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/childrenMsgs'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ResponseSucess'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ResponseNotFound'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/BadRequestError_saveChild'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/InternalServerError'
+  /sendAuth:
+    post:
+      tags:
+        - Autorizador
+      summary: servicio que se encarga de enviar la transaccion u mensaje iso8583 hacia el authorizador
+      description: servicio que se encarga de enviar la transaccion u mensaje iso8583 hacia el authorizador
+      operationId: sendAuth
+      parameters:
+        - name: entityIdSentParent
+          in: query
+          description: ID trama entidad(padre)
+          required: true
+          schema:
+            type: string
+          example: "19761284-6f2e-4f05-8003-d3b3b58247c"
+        - name: entityIdSentChild
+          in: query
+          description: ID trama prueba(hija)
+          required: true
+          schema:
+            type: string
+          example: "34016196-62f8-46ef-a2f1-d3946c6dc765"
+
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ResponseAuth'
+        
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/BadRequestError_auth'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/InternalServerError'
+  
+  /searchLog/{entityId}:
+    get:
+      tags:
+        - Registro de Logs de mensaje ISO8583
+      summary: Consultar registro-logs por id  
+      description: Consulta de registros-logs por devolviendo como resultado los 4 json de tramas decodificadas
+      operationId: searchLog
+      parameters:
+        - name: entityId
+          in: path
+          description: ID logHistory
+          required: true
+          schema:
+            type: string
+          example: "01d93bba-ca24-4bef-baa4-8f13e5832c2f"
+
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/logRespId'          
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ResponseNotFound'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/InternalServerError'
+          
+components:
+
+  parameters:
+  
+    entityId:
+      name: entityId
+      in: query
+      description: Identificador del mensaje ISO8583
+      required: true
+      schema:
+        type: string
+
+    DeleteXEntityId:
+      name: entityId
+      in: path
+      description: Identificador del mensaje ISO8583
+      required: true
+      schema:
+        type: string
+        
+    financialEntity:
+      name: financialEntity
+      in: query
+      description: Entidad financiera perteneciente al mensaje ISO8583
+      required: true
+      explode: true
+      schema:
+        type: string
+        enum:
+        - "1001"
+        - "1002"
+        - "1007"
+        - "1011"
+        - "1012"
+        - "1019"
+        - "1023"
+        - "1040"
+        - "1051"
+        - "1052"
+        - "1059"
+        - "1061"
+        - "1062"
+        - "1507"
+    productOrigin:
+      name: productOrigin
+      in: query
+      description: Porducto de origen al mensaje ISO8583
+      required: true
+      explode: true
+      schema:
+        type: string
+        enum:
+        - "00"
+        - "01"
+        - "02"
+    typeMessage:
+      name: typeMessage
+      in: query
+      description: Tipo de mensaje ISO8583
+      required: true
+      explode: true
+      schema:
+        type: string
+        enum:
+        - "0200"
+        - "0420"
+        - "0800"
+    typeTransaction:
+      name: typeTransaction
+      in: query
+      description: Tipo de transacción mensaje ISO8583
+      required: true
+      explode: true
+      schema:
+        type: string
+        enum:
+        - "011000"
+        - "012000"
+        - "013000"
+        - "311000"
+        - "312000"
+        - "313000"
+        - "314000"
+        - "381000"
+        - "382000"
+        - "400100"
+        - "401000"
+        - "401010"
+        - "401020"
+        - "402000"
+        - "402010"
+        - "402020"
+        - "403000"
+
+  schemas:
+  
+    SuccesGetMsgsxFilters:
+      type: object
+      properties:
+        financialEntity:
+          type: string
+          description: Entidad financiera
+          example: "1001"
+        entityId:
+          type: string
+          description: Identificador de mensaje ISO8583 
+          example: "326d346c-9af8-4acf-8c91-a8295fed2d76"
+        typeMessage:
+          type: string
+          description: Tipo de mensaje
+          example: "0200"
+        productOrigin:
+          type: string
+          description: Producto de Origen
+          example: "01"
+        typeTransaction:
+          type: string
+          description: Tipo de transacción
+          example: "011000"
+        dateRegisterMessage:
+          type: string
+          description: Fecha de registro de mensaje
+          example: "2023-06-14T09:32:14.395294"
+        amountTransaction:
+          type: string
+          description: Cantidad de dinero de la transacción del mensaje ISO8583
+          example: "003210282088"
+        isoParentMessage:
+          type: string
+          description: Mensaje ISO8583 de la entidad
+          example: "ISO0150000100200B238440128A1901A00000000100001AC0110000032102820881021211152000125140623102155339010212344539242320244817=2204226000008030000000000000300000001        REFACC VAUDEMAR 1     CANCXZ QROO  QR MX0276639660                  36484FFFFFFFFFFFFFFFF012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+  
+    GetMsgXId:
+      type: array
+      items:
+        oneOf:
+          - type: object
+            properties:
+              h:
+                type: string
+                description: Message Header
+                example: "ISO016000010"
+              desc:
+                type: string
+                description: Description
+                example: "Message Header"
+          - type: object
+            properties:
+              t:
+                type: string
+                description: Message Type
+                example: "0200"
+              desc:
+                type: string
+                description: Description
+                example: "Message Type"
+          - type: object
+            properties:
+              p:
+                type: string
+                description: Bitmap, Primary
+                example: "B238440128A1901A"
+              desc:
+                type: string
+                description: Description
+                example: "Bitmap, Primary"
+          - type: object
+            properties:
+              "1":
+                type: string
+                description: Bitmap, Secondary
+                example: "00000000100001AC"
+              desc:
+                type: string
+                description: Description
+                example: "Bitmap, Secondary"
+          - type: object
+            properties:
+              "3":
+                type: string
+                description: Processing Code
+                example: "382000"
+              desc:
+                type: string
+                description: Description
+                example: "Processing Code"
+          - type: object
+            properties:
+              "4":
+                type: string
+                description: Amount, Transaction
+                example: "003210282088"
+              desc:
+                type: string
+                description: Description
+                example: "Amount, Transaction"
+          - type: object
+            properties:
+              "7":
+                type: string
+                description: Transmission Date and Time
+                example: "1021211152"
+              desc:
+                type: string
+                description: Description
+                example: "Transmission Date and Time"
+          - type: object
+            properties:
+              "11":
+                type: string
+                description: System Trace Audit Number
+                example: "000125"
+              desc:
+                type: string
+                description: Description
+                example: "System Trace Audit Number"
+          - type: object
+            properties:
+              "12":
+                type: string
+                description: Time, Local Transaction
+                example: "140623"
+              desc:
+                type: string
+                description: Description
+                example: "Time, Local Transaction"
+          - type: object
+            properties:
+              "13":
+                type: string
+                description: Date, Local Transaction
+                example: "1021"
+              desc:
+                type: string
+                description: Description
+                example: "Date, Local Transaction"
+          - type: object
+            properties:
+              "18":
+                type: string
+                description: Merchant Type
+                example: "5533"
+              desc:
+                type: string
+                description: Description
+                example: "Merchant Type"
+          - type: object
+            properties:
+              "22":
+                type: string
+                description: Point-of-Service Entry Mode
+                example: "901"
+              desc:
+                type: string
+                description: Description
+                example: "Point-of-Service Entry Mode"
+          - type: object
+            properties:
+              "32":
+                type: string
+                description: Acquiring Institution ID Code
+                example: "12"
+              desc:
+                type: string
+                description: Description
+                example: "Acquiring Institution ID Code"
+          - type: object
+            properties:
+              "35":
+                type: string
+                description: Track 2 Data
+                example: "4539242320244817=22042260000080300"
+              desc:
+                type: string
+                description: Description
+                example: "Track 2 Data"
+          - type: object
+            properties:
+              "37":
+                type: string
+                description: Retrieval Reference Number
+                example: "000000000003"
+              desc:
+                type: string
+                description: Description
+                example: "Retrieval Reference Number"
+          - type: object
+            properties:
+              "41":
+                type: string
+                description: Card Acceptor Terminal ID
+                example: "00000001        "
+              desc:
+                type: string
+                description: Description
+                example: "Card Acceptor Terminal ID"
+          - type: object
+            properties:
+              "43":
+                type: string
+                description: Card Acceptor Name/Location
+                example: "REFACC VAUDEMAR 1     CANCXZ QROO  QR MX"
+              desc:
+                type: string
+                description: Description
+                example: "Card Acceptor Name/Location"
+          - type: object
+            properties:
+              "48":
+                type: string
+                description: Additional Data - Private
+                example: "6639660                  36"
+              desc:
+                type: string
+                description: Description
+                example: "Additional Data - Private"
+          - type: object
+            properties:
+              "49":
+                type: string
+                description: Currency Code, Transaction
+                example: "484"
+              desc:
+                type: string
+                description: Description
+                example: "Currency Code, Transaction"
+          - type: object
+            properties:
+              "52":
+                type: string
+                description: PIN
+                example: "FFFFFFFFFFFFFFFF"
+              desc:
+                type: string
+                description: Description
+                example: "PIN"
+          - type: object
+            properties:
+              "60":
+                type: string
+                description: Reserved National
+                example: "SPKTNKTT+000"
+              desc:
+                type: string
+                description: Description
+                example: "Reserved National"
+          - type: object
+            properties:
+              "61":
+                type: string
+                description: Reserved Private
+                example: "B831PRO1    P"
+              desc:
+                type: string
+                description: Description
+                example: "Reserved Private"
+          - type: object
+            properties:
+              "63":
+                type: string
+                description: Reserved Private
+                example: "& 0000400082! Q200002 03! C000026 409  001077516    00 1023 ! C400012 000000000050"
+              desc:
+                type: string
+                description: Description
+                example: "Reserved Private"
+          - type: object
+            properties:
+              "100":
+                type: string
+                description: Receiving Institution ID Code
+                example: "831"
+              desc:
+                type: string
+                description: Description
+                example: "Receiving Institution ID Code"
+          - type: object
+            properties:
+              "120":
+                type: string
+                description: Reserved for Private Use
+                example: "                             "
+              desc:
+                type: string
+                description: Description
+                example: "Reserved for Private Use"
+          - type: object
+            properties:
+              "121":
+                type: string
+                description: Reserved for Private Use
+                example: "                    "
+              desc:
+                type: string
+                description: Description
+                example: "Reserved for Private Use"
+          - type: object
+            properties:
+              "123":
+                type: string
+                description: Reserved for Private Use
+                example: "                    "
+              desc:
+                type: string
+                description: Description
+                example: "Reserved for Private Use"
+          - type: object
+            properties:
+              "125":
+                type: string
+                description: Reserved for Private Use
+                example: "C5BICIB24   "
+              desc:
+                type: string
+                description: Description
+                example: "Reserved for Private Use"
+          - type: object
+            properties:
+              "126":
+                type: string
+                description: Reserved for Private Use
+                example: "000                                   "
+              desc:
+                type: string
+                description: Description
+                example: "Reserved for Private Use"    
+    bodySaveMsg:
+      type: object
+      properties:
+        financialEntity:
+          type: string
+          description: Entidad financiera del mensaje ISO8583 a guardar
+          example: "1507"
+          enum:
+          - "1001"
+          - "1002"
+          - "1007"
+          - "1011"
+          - "1012"
+          - "1019"
+          - "1023"
+          - "1040"
+          - "1051"
+          - "1052"
+          - "1059"
+          - "1061"
+          - "1062"
+          - "1507"
+        isoParentMessage:
+          type: string
+          description: Mensaje ISO8583 a guardar
+          example: "ISO0160000100200B238440128A1901A00000000100001AC0110000032102820881021211152000125161112102155339010212325011111111111111=14031010000050400000000000300000001        REFACC VAUDEMAR 1     CANCXZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "          
+    BadRequest:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 400
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "Los Campos: financialEntity, typeMessage, productOrigin y typeTransaction Son Requeridos Como QueryParams" 
+          
+    NotMsgXId:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 404
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "Id Trama IsoMessage No Encontrada"      
+          
+    NotEntityIdSent:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 500
+        message:
+          type: string
+          description: Mensaje de error 
+          example: null
+          
+    DeletedMsg:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 200
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "Trama ISO8583 eliminada con exito"  
+         
+    NotIdMsgSent:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "Missing Authentication Token"   
+          
+    SuccessMsgSaved:
+      type: object
+      properties:
+        financialEntity:
+          type: string
+          description: Código de estado de la respuesta
+          example: "1001"
+        entityId:
+          type: string
+          description: Identificador de mensaje ISO8583 
+          example: "0e84cf21-6acf-42e9-8506-9ae7a86ef686"
+        typeMessage:
+          type: string
+          description: Tipo de mensaje
+          example: "0200"
+        productOrigin:
+          type: string
+          description: Producto de Origen
+          example: "01"
+        typeTransaction:
+          type: string
+          description: Tipo de transacción
+          example: "011000"
+        dateRegisterMessage:
+          type: string
+          description: Fecha de registro de mensaje
+          example: "2023-06-15T09:55:04.861681"
+        amountTransaction:
+          type: string
+          description: Cantidad de dinero de la transacción del mensaje ISO8583
+          example: "003210282088"
+        isoParentMessage:
+          type: string
+          description: Mensaje ISO8583 de la entidad
+          example: "ISO0160000100200B238440128A1901A00000000100001AC0110000032102820881021211152000125161112102155339010212325011111111111111=14031010000050400000000000300000001        REFACC VAUDEMAR 1     CANCXZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+    ExistingMsg:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 409
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "La Trama IsoMessage Ya Existe En La Base De Datos Para La Entidad => 1021" 
+ 
+    NotISOMsgSent:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 500
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "begin 16, end 17, length 0"  
+          
+    NotFormatISO8583:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Código de estado de la respuesta
+          example: 400
+        message:
+          type: string
+          description: Mensaje de error 
+          example: "Datos adicionales después del último campo: field 126 pos 509"
+    
+    childrenMsgs:
+      type: object
+      properties:
+        h:
+          type: string
+          example: ISO026000010
+        t:
+          type: string
+          example: 0230
+        3:
+          type: string
+          example: 002000
+        4:
+          type: string
+          example: 000000004000
+        7:
+          type: string
+          example: 1031214045
+        11:
+          type: string
+          example: 011256
+        12:
+          type: string
+          example: 154444
+        22:
+          type: string
+          example: 902
+        32:
+          type: string
+          example: 99999999999
+        35:
+          type: string
+          example: 4696930020647078=14061013580000000000
+        37:
+          type: string
+          example: 000000002929
+        39:
+          type: string
+          example: 51
+        41:
+          type: string
+          example: "P0246779        "
+        48:
+          type: string
+          example: "7327548            00011511"
+        49:
+          type: string
+          example: 484
+        61:
+          type: string
+          example: B133PRO100000000000
+        63:
+          type: string
+          example: "& 0000400090! C000026         00000012100       ! 0400020             Y     ! Q100002 0"
+        120:
+          type: string
+          example: "RZ PEDRZ LURIGS SI 0000"
+        121:
+          type: string
+          example: "                  PO"
+        125:
+          type: string
+          example: 063171808
+        126:
+          type: string
+          example: "00000000000000000000000000000000000000"
+
+    logRespId:
+      type: object
+      properties:
+        RQparentDate:
+          type: string
+          example: "2023-06-08T16:24:14.328148"
+        RSparentDate:
+          type: string
+          example: "2023-06-08T16:24:14.328148"
+        RQchildDate:
+          type: string
+          example: "2023-06-08T13:57:49.463711"
+        RSchildDate:
+          type: string
+          example: "2023-06-08T16:24:14.328148"
+        RQparent:
+          $ref: '#/components/schemas/GetMsgXId'
+        RSparent:
+          $ref: '#/components/schemas/GetMsgXId'
+        RQchild:
+          $ref: '#/components/schemas/GetMsgXId'
+        RSchild:
+          $ref: '#/components/schemas/GetMsgXId'
+        
+    logResponse:
+      type: object
+      properties:
+        financialEntity:
+          type: string
+          example: 1012
+        entityId:
+          type: string
+          example: ffa1c6aa-8b9b-4e36-9505-ad40059c8ddc
+        typeMessage:
+          type: string
+          example: 0200
+        productOrigin:
+          type: string
+          example: 01
+        typeTransaction:
+          type: string
+          example: 011000
+        logChildEntry:
+          type: object
+          properties:
+            dateSentChildMsg:
+              type: string
+              example: "2023-06-14T15:24:51.446798"
+            dateAnsChildMsg:
+              type: string
+              example: "2023-06-14T15:24:54.887587"
+            entryChildMsg:
+              type: string
+              example: "ISO0160000100200B238440128A1901A00000000100001AC0110000032102821881021211152000125161112102155339010212325011111111111111=14031010000050418859253001100000001        SSFACC RAUDEMxR 1     CANABZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+            ansChildMsg:
+              type: string
+              example: "ISO0160000100210B23844012EA1901A00000000100001AC0110000032102821881021211152000125161112102155339010212325011111111111111=1403101000005041885925300115465110000000001        SSFACC RAUDEMxR 1     CANABZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+        logParentEntry:
+          type: object
+          properties:
+            dateSentParentMsg:
+              type: string
+              example: "2023-06-14T15:24:51.446798"
+            dateAnsParentMsg:
+              type: string
+              example: "2023-06-14T15:24:51.446798"
+            entryParentMsg:
+              type: string
+              example: "ISO0160000100200B238440128A1901A00000000100001AC0110000032102821881021211152000125161112102155339010212325011111111111111=14031010000050418859253001100000001        SSFACC RAUDEMxR 1     CANABZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+            ansParentMsg:
+              type: string
+              example: "ISO0160000100210B23844012EA1901A00000000100001AC0110000032102821881021211152000125161112102155339010212325011111111111111=1403101000005041885925300115465110000000001        SSFACC RAUDEMxR 1     CANABZ QROO  QR MX0276639660                  36484DB1EB8B13D81CA2A012SPKTNKTT+000013B831PRO1    P082& 0000400082! Q200002 03! C000026 409  001077516    00 1001 ! C400012 00000000005003831029                             020                    020                    012C5BICIB24   038000                                   "
+    ResponseSucess:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: El mensaje ISO8583 ha sido registrado con exito
+    ResponseNotFound:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Id No Encontrado
+    BadRequestError_saveChild:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: "Los datos de campo son 7 bytes, se esperaba 6: field 11"
+    BadRequestError_auth:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: "Los Campos: entityIdSentParent, entityIdSentChild. Son Requeridos Como QueryParams"
+    BadRequestFilter:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: "Los Campos: financialEntity, typeMessage, productOrigin y typeTransaction Son Requeridos Como QueryParams" 
+    
+    InternalServerError:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 500
+        message:
+          type: string
+          example: "Internal server error"
+
+    ResponseAuth:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 201
+        message:
+          type: string
+          example: "Transacción Aprobada : ISO0160000100210B23844012EA1801A00000000100001AC0110000000000040000903204444009921154444090358129021199999999999375696930020647078=1406101358000000000000000000292947424400P0246779        GRUPO FILOA           MEXICO DF    000MX0277327548            00011511484016B021PRO1+0000000019B133    00000000000082& 0000400082! Q200002 03! C000026         00000012100       ! C400012 00000002005003133029AV GUILLERMO GONZALEZ NO 0000020                    02000000028200000002820012P2B24 B24 0303800000000000000000000000000000000000000"
+        ansChildMsg:
+            $ref: '#/components/schemas/GetMsgXId'

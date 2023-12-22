@@ -1,0 +1,10 @@
+name: func-${self:custom.project}-${self:custom.stage}-deleteTrama
+handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+role: DeleteLambdaRole
+environment:
+  FUNCTION_NAME : deleteTrama
+events:
+  - http:
+      path: ${self:custom.basePath}/deleteTrama/{entityId}
+      method: DELETE
+      cors: ${file(./serverless/general/cors.yml)}
